@@ -1,16 +1,15 @@
-import API from "./authSlice";
+import { baseApi } from "../../api/baseApi";
 
-export interface LoginPayload {
-  phone: string;
-  password: string;
-}
+const authApi = baseApi.injectEndpoints({
+  endpoints: (builder) => ({
+    login: builder.mutation({
+      query: (userInfo) => ({
+        url: "/auth/login",
+        method: "POST",
+        body: userInfo,
+      }),
+    }),
+  }),
+});
 
-export const loginApi = async (data: LoginPayload) => {
-  const res = await API.post("/users/login", data);
-  return res.data; // { accessToken }
-};
-
-export const getMeApi = async () => {
-  const res = await API.get("/users/me");
-  return res.data; // user object
-};
+export const { useLoginMutation } = authApi;

@@ -1,37 +1,41 @@
-import axios from "axios";
+import { createSlice } from "@reduxjs/toolkit";
+import type { RootState } from "../../store";
 
-// interface User {
-//   _id: string;
-//   name: string;
-//   phone: string;
-//   role?: string;
-// }
+export type TUser = {
+  userId: string;
+  role: string;
+  iat: number;
+  exp: number;
+};
 
-// interface AuthState {
-//   user: User | null;
-//   token: string | null;
-//   loading: boolean;
-//   error: string | null;
-// }
+type TAuthState = {
+  user: null | TUser;
+  token: null | string;
+};
+const initialState: TAuthState = {
+  user: null,
+  token: null,
+};
 
-// const initialState: AuthState = {
-//   user: null,
-//   token: localStorage.getItem("accessToken"),
-//   loading: false,
-//   error: null,
-// };
-
-const API = axios.create({
-  baseURL: "https://base360.onrender.com/api/v1",
+const authSlice = createSlice({
+  name: "auth",
+  initialState,
+  reducers: {
+    setUser: (state, action) => {
+      const { user, token } = action.payload;
+      state.user = user;
+      state.token = token;
+    },
+    logout: (state) => {
+      state.user = null;
+      state.token = null;
+    },
+  },
 });
 
-// attach token automatically
-API.interceptors.request.use((config) => {
-  const token = localStorage.getItem("accessToken");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+export const { setUser, logout } = authSlice.actions;
 
-export default API;
+export default authSlice.reducer;
+
+export const useCurrentToken = (state: RootState) => state.auth.token;
+export const selectCurrentUser = (state: RootState) => state.auth.user;
