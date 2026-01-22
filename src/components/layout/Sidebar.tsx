@@ -1,26 +1,61 @@
-import { NavLink } from "react-router-dom";
+import { Layout, Menu } from "antd";
+import { useAppSelector } from "../../redux/hooks";
+import { selectCurrentUser } from "../../redux/features/auth/authSlice";
+import { adminPaths } from "../../routes/admin.routes";
+import { sidebarItemsGenerator } from "../../utils/sidebarItemsGenerator";
 
-const Sidebar: React.FC = () => {
-  const linkClass = "block hover:text-blue-400";
+const { Sider } = Layout;
+
+const userRole = {
+  ADMIN: "admin",
+  FACULTY: "faculty",
+  STUDENT: "student",
+};
+
+const Sidebar = () => {
+  const user = useAppSelector(selectCurrentUser);
+  let sidebarItems;
+  console.log(user!.role);
+
+  switch (user!.role) {
+    case userRole.ADMIN:
+      sidebarItems = sidebarItemsGenerator(adminPaths, userRole.ADMIN);
+      break;
+    // case userRole.FACULTY:
+    //   sidebarItems = sidebarItemsGenerator(facultyPaths, userRole.FACULTY);
+    //   break;
+    // case userRole.STUDENT:
+    //   sidebarItems = sidebarItemsGenerator(studentPaths, userRole.STUDENT);
+    //   break;
+
+    default:
+      break;
+  }
 
   return (
-    <div className='w-64 min-h-screen bg-slate-900 text-white p-4'>
-      <h2 className='text-2xl font-bold mb-8'>Admin</h2>
-
-      <ul className='space-y-4'>
-        <li>
-          <NavLink to='/dashboard' className={linkClass}>
-            Dashboard
-          </NavLink>
-        </li>
-
-        <li>
-          <NavLink to='/users' className={linkClass}>
-            Users
-          </NavLink>
-        </li>
-      </ul>
-    </div>
+    <Sider
+      breakpoint="lg"
+      collapsedWidth="0"
+      style={{ height: "100vh", position: "sticky", top: 0, left: 0 }}
+    >
+      <div
+        style={{
+          color: "white",
+          height: "4rem",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <h1>PH Uni</h1>
+      </div>
+      <Menu
+        theme="dark"
+        mode="inline"
+        defaultSelectedKeys={["4"]}
+        items={sidebarItems}
+      />
+    </Sider>
   );
 };
 
