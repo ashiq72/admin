@@ -1,4 +1,5 @@
 import { ThemeProvider } from './components/ThemeProvider';
+import AppRouter from './router';
 
 export const App = () => {
   return (
@@ -7,7 +8,7 @@ export const App = () => {
         defaultTheme='dark'
         storageKey='vite-ui-theme'
       >
-        App
+        <AppRouter />
       </ThemeProvider>
     </>
   );
