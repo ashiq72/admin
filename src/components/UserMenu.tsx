@@ -42,6 +42,7 @@ function UserMenu() {
               size='32px'
               round='8px'
             />
+
             <div className=' absolute bottom-0 right-0 size-2 rounded-full bg-emerald-500 dark:bg-emerald-400 ring-sidebar ring-1'></div>
           </div>
         </DropdownMenuTrigger>

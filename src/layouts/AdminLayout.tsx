@@ -9,7 +9,7 @@ export default function AdminLayout() {
       <AppSidebar />
       <SidebarInset>
         <Header />
-        <main>
+        <main className='p-4'>
           <Outlet />
         </main>
       </SidebarInset>

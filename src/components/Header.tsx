@@ -4,7 +4,12 @@ import { useSidebar } from './ui/sidebar';
 
 // Assets
 import { Logo } from '@/assets/Logo';
-import { MenuIcon, SearchIcon } from 'lucide-react';
+import {
+  DownloadIcon,
+  MenuIcon,
+  SearchIcon,
+  Settings2Icon,
+} from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 
 function Header() {
@@ -40,7 +45,7 @@ function Header() {
               <SearchIcon />
             </Button>
           </div>
-          {/* <div className='flex items-center gap-3'>
+          <div className='flex items-center gap-3'>
             <Button
               variant='outline'
               className=''
@@ -55,7 +60,7 @@ function Header() {
               <DownloadIcon />
               <span>Export</span>
             </Button>
-          </div> */}
+          </div>
         </div>
       </div>
     </>
