@@ -74,7 +74,7 @@ export const APP_SIDEBAR = {
     },
     {
       title: 'Users',
-      url: '#',
+      url: '/users',
       Icon: UsersIcon,
     },
   ],

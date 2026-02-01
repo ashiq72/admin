@@ -1,6 +1,6 @@
 import { UserTable } from '@/components/UserTable';
-import { columns } from '@/components/Columns';
-import { useUsers } from '@/hooks/useUsers';
+import { vendorColumns } from '@/components/vendor/vendor.columns';
+import { useUsers } from '@/hooks/useUser';
 
 export const Users = () => {
   const { data } = useUsers();
@@ -8,7 +8,7 @@ export const Users = () => {
   return (
     <div>
       <UserTable
-        columns={columns}
+        columns={vendorColumns}
         data={data}
       />
     </div>

@@ -1,5 +1,5 @@
+import { getUsers } from '@/services';
 import { useEffect, useState } from 'react';
-import { getUsers } from '@/api';
 
 export const useUsers = () => {
   const [data, setData] = useState([]);
@@ -9,7 +9,7 @@ export const useUsers = () => {
   useEffect(() => {
     getUsers()
       .then((res) => {
-        setData(res.data || res); // depends on API response
+        setData(res.data || res);
       })
       .catch(() => {
         setError('Failed to load users');

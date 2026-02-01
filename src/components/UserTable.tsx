@@ -1,7 +1,10 @@
 /*
  * @copyright 2025 soundten
- * @lincese Apache-2.0
+ * @license Apache-2.0
  */
+
+import { useState } from 'react';
+
 import {
   flexRender,
   getCoreRowModel,
@@ -9,6 +12,12 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+} from '@tanstack/react-table';
+
+import type {
+  ColumnDef,
+  ColumnFiltersState,
+  SortingState,
 } from '@tanstack/react-table';
 
 import {
@@ -20,60 +29,77 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-/**
- * Types
- */
-import type {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-} from '@tanstack/react-table';
 import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group';
-import { useState } from 'react';
 import { InputGroup, InputGroupAddon, InputGroupInput } from './ui/input-group';
+import { Button } from './ui/button';
+import { Kbd } from './ui/kbd';
+
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ListFilterIcon,
   SearchIcon,
 } from 'lucide-react';
-import { Kbd } from './ui/kbd';
-import { Button } from './ui/button';
+import { DataTableSkeleton } from './DataTableSkeleton';
 
-interface Props<TData, TValue> {
+/* -------------------------------------------------------------------------- */
+/* Types */
+/* -------------------------------------------------------------------------- */
+
+interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  loading?: boolean;
 }
+
 type Filter = 'view-all' | 'monitored' | 'unmonitored';
 
-export const UserTable = <DataTable, Value>({
+/* -------------------------------------------------------------------------- */
+/* Component */
+/* -------------------------------------------------------------------------- */
+
+export function UserTable<TData, TValue>({
   columns,
   data,
-}: Props<DataTable, Value>) => {
+  loading = false,
+}: DataTableProps<TData, TValue>) {
+  /* ------------------------------ State ------------------------------ */
+
   const [filter, setFilter] = useState<Filter>('view-all');
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
 
+  /* --------------------------- Table Instance --------------------------- */
+
   const table = useReactTable({
     data,
     columns,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    onSortingChange: setSorting,
-    onRowSelectionChange: setRowSelection,
+
     state: {
       columnFilters,
       sorting,
       rowSelection,
     },
+
+    onColumnFiltersChange: setColumnFilters,
+    onSortingChange: setSorting,
+    onRowSelectionChange: setRowSelection,
+
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
   });
 
+  /* ------------------------------ Render ------------------------------ */
+
   return (
-    <div className='max-md:-mx-4 max-lg:mx-8'>
+    <div className='relative max-md:-mx-4 max-lg:mx-8'>
+      {/* 🔥 Loading Overlay */}
+      {loading && <DataTableSkeleton />}
+
+      {/* ---------------- Toolbar ---------------- */}
       <div className='flex gap-4 p-6 max-lg:flex-col lg:justify-between lg:py-3'>
         <ToggleGroup
           type='single'
@@ -81,10 +107,11 @@ export const UserTable = <DataTable, Value>({
           value={filter}
           onValueChange={(value: Filter) => setFilter(value)}
         >
-          <ToggleGroupItem value='veiw-all'>View all</ToggleGroupItem>
+          <ToggleGroupItem value='view-all'>View all</ToggleGroupItem>
           <ToggleGroupItem value='monitored'>Monitored</ToggleGroupItem>
           <ToggleGroupItem value='unmonitored'>Unmonitored</ToggleGroupItem>
         </ToggleGroup>
+
         <div className='flex gap-3'>
           <InputGroup>
             <InputGroupInput
@@ -102,6 +129,7 @@ export const UserTable = <DataTable, Value>({
             <InputGroupAddon>
               <SearchIcon />
             </InputGroupAddon>
+
             <InputGroupAddon align='inline-end'>
               <Kbd>#K</Kbd>
             </InputGroupAddon>
@@ -113,30 +141,31 @@ export const UserTable = <DataTable, Value>({
           </Button>
         </div>
       </div>
+
+      {/* ---------------- Table ---------------- */}
       <Table>
         <TableHeader className='bg-secondary/40 border-t'>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead
-                    key={header.id}
-                    className='px-4'
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </TableHead>
-                );
-              })}
+              {headerGroup.headers.map((header) => (
+                <TableHead
+                  key={header.id}
+                  className='px-4'
+                >
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
+                </TableHead>
+              ))}
             </TableRow>
           ))}
         </TableHeader>
+
         <TableBody>
-          {table.getRowModel().rows?.length ? (
+          {table.getRowModel().rows.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
@@ -165,11 +194,13 @@ export const UserTable = <DataTable, Value>({
         </TableBody>
       </Table>
 
+      {/* ---------------- Pagination ---------------- */}
       <div className='flex gap-3 justify-between items-center border-t py-3 px-6'>
-        <p className='text-sm font-extrabold text-muted-foreground max-md:max-auto md:me-auto'>
+        <p className='text-sm font-extrabold text-muted-foreground'>
           Page {table.getState().pagination.pageIndex + 1} of{' '}
           {table.getPageCount()}
         </p>
+
         <Button
           variant='outline'
           className='max-md:-order-1'
@@ -179,6 +210,7 @@ export const UserTable = <DataTable, Value>({
           <ChevronLeftIcon className='md:hidden' />
           <span className='max-md:hidden'>Previous</span>
         </Button>
+
         <Button
           variant='outline'
           onClick={() => table.nextPage()}
@@ -190,4 +222,4 @@ export const UserTable = <DataTable, Value>({
       </div>
     </div>
   );
-};
+}
